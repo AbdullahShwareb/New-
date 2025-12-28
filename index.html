@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>محلات أيمن أبو الشوارب — نسخة متزامنة (Firebase)</title>
+<title>محلات أيمن أبو الشوارب —   (Firebase)</title>
 <style>
 :root{ --bg:#f7f7fb; --card:#fff; --txt:#111; --muted:#6b7280; --line:#e5e7eb; --pri:#2563eb; --ok:#16a34a; --warn:#b45309; }
 *{ box-sizing:border-box; }
@@ -56,27 +56,10 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 .filelabel{ position:relative }
 .filelabel input{ position:absolute; inset:0; opacity:0; cursor:pointer }
 </style>
-
-<style>
-  body {
-    background-color: #f5f7fa;
-    background-image: url("logo.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 420px;
-    background-attachment: fixed;
-  }
-
-  .card, .container, .box {
-    background: rgba(255,255,255,0.96);
-    border-radius: 12px;
-  }
-</style>
-
 </head>
 <body>
 <nav class="topbar">
-  <div class="brand">محلات أيمن أبو الشوارب — نسخة متزامنة (Firebase)</div>
+  <div class="brand">محلات أيمن أبو الشوارب —   (Firebase)</div>
   <div class="actions">
     <button id="btnExport" class="btn ghost">تصدير النسخة الاحتياطية</button>
     <label class="btn ghost filelabel">استيراد<input id="importFile" type="file" accept=".json" hidden></label>
@@ -87,8 +70,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   <section class="grid">
     <div class="card">
       <h2>ملخص سريع</h2>
-      <div class="field"><label>الشركة</label><input id="companySearch" placeholder="ابحث عن شركة..." style="margin-bottom:8px;width:100%;padding:6px">
-<select id="selSupplier"></select></div>
+      <div class="field"><label>المورد</label><select id="selSupplier"></select></div>
       <div class="stats">
         <div class="stat"><div class="muted">إجمالي الفواتير</div><div id="sumInv" class="num">0</div></div>
         <div class="stat"><div class="muted">إجمالي الدفعات</div><div id="sumPay" class="num">0</div></div>
@@ -120,7 +102,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 
     <div class="card">
       <div class="tabs">
-        <button class="tab active" data-target="#tSup">الشركةون</button>
+        <button class="tab active" data-target="#tSup">الموردون</button>
         <button class="tab" data-target="#tInv">الفواتير</button>
         <button class="tab" data-target="#tPay">الدفعات</button>
         <button class="tab" data-target="#tRpt">تقرير</button>
@@ -128,7 +110,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 
       <div class="tabcontent show" id="tSup">
         <div class="toolbar">
-          <input id="supSearch" class="input" placeholder="ابحث عن اسم الشركة...">
+          <input id="supSearch" class="input" placeholder="ابحث عن اسم المورد...">
           <button id="btnGlobalReport" class="btn ghost">تقرير شامل</button>
         </div>
         <div class="table-wrap">
@@ -142,7 +124,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
       <div class="tabcontent" id="tInv">
         <div class="table-wrap">
           <table class="table">
-            <thead><tr><th>التاريخ</th><th>الفاتورة</th><th>الشركة</th><th>المبلغ</th><th>ملاحظات</th><th></th></tr></thead>
+            <thead><tr><th>التاريخ</th><th>الفاتورة</th><th>المورد</th><th>المبلغ</th><th>ملاحظات</th><th></th></tr></thead>
             <tbody id="invBody"></tbody>
           </table>
         </div>
@@ -151,7 +133,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
       <div class="tabcontent" id="tPay">
         <div class="table-wrap">
           <table class="table">
-            <thead><tr><th>التاريخ</th><th>الشركة</th><th>المندوب</th><th>المبلغ</th><th>طريقة</th><th>ملاحظات</th><th></th></tr></thead>
+            <thead><tr><th>التاريخ</th><th>المورد</th><th>المندوب</th><th>المبلغ</th><th>طريقة</th><th>ملاحظات</th><th></th></tr></thead>
             <tbody id="payBody"></tbody>
           </table>
         </div>
@@ -165,7 +147,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
         </div>
         <div class="table-wrap">
           <table class="table">
-            <thead><tr><th>الشركة</th><th>إجمالي فواتير</th><th>إجمالي دفعات</th><th>افتتاحي</th><th>الرصيد الحالي</th></tr></thead>
+            <thead><tr><th>المورد</th><th>إجمالي فواتير</th><th>إجمالي دفعات</th><th>افتتاحي</th><th>الرصيد الحالي</th></tr></thead>
             <tbody id="rBody"></tbody>
           </table>
         </div>
@@ -178,7 +160,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 <div class="modal" id="mSupplier"><div class="modal-box"><h3>مورد جديد/تعديل</h3>
 <form id="fSup">
   <input type="hidden" id="sid">
-  <div class="field"><label>اسم الشركة</label><input id="sname" required></div>
+  <div class="field"><label>اسم المورد</label><input id="sname" required></div>
   <div class="field"><label>رصيد افتتاحي</label><input id="sopen" type="number" value="0"></div>
   <div class="field"><label>اسم المندوب</label><input id="srep"></div>
   <div class="field"><label>ملاحظات</label><input id="snote"></div>
@@ -190,7 +172,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   <input type="hidden" id="iid">
   <div class="field"><label>التاريخ</label><input id="idate" type="date" required></div>
   <div class="field"><label>رقم الفاتورة</label><input id="ino"></div>
-  <div class="field"><label>الشركة</label><select id="isup" required></select></div>
+  <div class="field"><label>المورد</label><select id="isup" required></select></div>
   <div class="field"><label>المبلغ</label><input id="iamt" type="number" step="0.01" min="0" required></div>
   <div class="field"><label>ملاحظات</label><input id="inote"></div>
 
@@ -206,7 +188,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 <form id="fPay">
   <input type="hidden" id="pid">
   <div class="field"><label>التاريخ</label><input id="pdate" type="date" required></div>
-  <div class="field"><label>الشركة</label><select id="psup" required></select></div>
+  <div class="field"><label>المورد</label><select id="psup" required></select></div>
   <div class="field"><label>المبلغ</label><input id="pamt" type="number" step="0.01" min="0" required></div>
   <div class="field"><label>طريقة الدفع</label><input id="pmethod" placeholder="نقدي/تحويل/شيك"></div>
   <div class="field"><label>اسم المندوب</label><input id="prep"></div>
@@ -216,7 +198,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 
 <div class="modal" id="mCalendar"><div class="modal-box"><h3>إضافة مورد إلى يوم</h3>
 <form id="fCal">
-  <div class="field"><label>الشركة</label><select id="calSup"></select></div>
+  <div class="field"><label>المورد</label><select id="calSup"></select></div>
   <div class="field"><label>اليوم</label>
     <select id="calDay">
       <option value="sat">السبت</option><option value="sun">الأحد</option><option value="mon">الاثنين</option>
@@ -229,13 +211,13 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 <div class="modal" id="mGlobalReport"><div class="modal-box">
   <h3>تقرير شامل — جميع الحسابات والدفعات</h3>
   <div class="grid-2">
-    <div class="pill"><div class="muted">مجموع أرصدة جميع الشركةين</div><div id="grTotalBalances" class="num">0</div></div>
+    <div class="pill"><div class="muted">مجموع أرصدة جميع الموردين</div><div id="grTotalBalances" class="num">0</div></div>
     <div class="pill"><div class="muted">إجمالي كل الدفعات</div><div id="grTotalPayments" class="num">0</div></div>
   </div>
   <h4 class="mt">جميع الدفعات</h4>
   <div class="table-wrap">
     <table class="table small">
-      <thead><tr><th>التاريخ</th><th>الشركة</th><th>المندوب</th><th>الطريقة</th><th>المبلغ</th><th>ملاحظات</th></tr></thead>
+      <thead><tr><th>التاريخ</th><th>المورد</th><th>المندوب</th><th>الطريقة</th><th>المبلغ</th><th>ملاحظات</th></tr></thead>
       <tbody id="grPaymentsBody"></tbody>
     </table>
   </div>
@@ -301,32 +283,10 @@ document.addEventListener('click', (e)=>{
 const byId = (a,id) => a.find(x=>x.id===id);
 
 function refreshSupplierSelects(){
-  const q = ($('#companySearch')?.value || '').trim();
-  const list = q
-    ? state.suppliers.filter(s => (s.name||'').includes(q))
-    : state.suppliers;
-
-  const opts = list
+  const opts = state.suppliers
     .slice()
     .sort((a,b)=> (a.name||'').localeCompare(b.name||'', 'ar'))
     .map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-
-  $('#selSupplier').innerHTML =
-    `<option value="" selected disabled>اختر شركة...</option>` + opts;
-
-  $('#isup').innerHTML = `<option value="" disabled selected>اختر شركة...</option>` + opts;
-  $('#psup').innerHTML = `<option value="" disabled selected>اختر شركة...</option>` + opts;
-  $('#calSup').innerHTML = opts;
-}">${s.name}</option>`).join('');
-
-  // ابدأ بدون اختيار
-  $('#selSupplier').innerHTML =
-    `<option value="" selected disabled>اختر شركة...</option>` + opts;
-
-  $('#isup').innerHTML = `<option value="" disabled selected>اختر شركة...</option>` + opts;
-  $('#psup').innerHTML = `<option value="" disabled selected>اختر شركة...</option>` + opts;
-  $('#calSup').innerHTML = opts;
-}">${s.name}</option>`).join('');
   $('#selSupplier').innerHTML = opts || '<option disabled selected>لا يوجد موردون</option>';
   $('#isup').innerHTML = '<option disabled selected>اختر...</option>' + opts;
   $('#psup').innerHTML = '<option disabled selected>اختر...</option>' + opts;
@@ -346,18 +306,11 @@ const balance = (supplierId) =>
 
 function renderSummary(){
   const id = String($('#selSupplier').value || '');
-  if(!id){
-    $('#sumInv').textContent = fmt(0);
-    $('#sumPay').textContent = fmt(0);
-    $('#open').textContent   = fmt(0);
-    $('#bal').textContent    = fmt(0);
-    return;
-  }
   const s = byId(state.suppliers, id);
   $('#sumInv').textContent = fmt(sumInv(id));
   $('#sumPay').textContent = fmt(sumPay(id));
-  $('#open').textContent   = fmt(s?.opening||0);
-  $('#bal').textContent    = fmt(balance(id));
+  $('#open').textContent = fmt(s?.opening||0);
+  $('#bal').textContent = fmt(balance(id));
 }
 
 function renderSuppliers(){
@@ -579,7 +532,7 @@ window.editSup = (id)=>{
   $('#snote').value = s.notes||'';
   openModal('#mSupplier');
 };
-window.delSup = async (id)=>{ if(confirm('حذف الشركة وكل حركاته؟')) await deleteSupplierCascade(id); };
+window.delSup = async (id)=>{ if(confirm('حذف المورد وكل حركاته؟')) await deleteSupplierCascade(id); };
 window.delInv = async (id)=>{ if(confirm('حذف الفاتورة؟')) await deleteInvoiceDoc(id); };
 window.delPay = async (id)=>{ if(confirm('حذف الدفعة؟')) await deletePaymentDoc(id); };
 window.removeFromDay = async (k,id)=>{
@@ -678,7 +631,6 @@ document.getElementById('btnGlobalReport').addEventListener('click', ()=> {
 });
 document.getElementById('filterDate').addEventListener('change', renderPaymentsByDate);
 document.getElementById('supSearch').addEventListener('input', renderSuppliers);
-document.getElementById('companySearch').addEventListener('input', refreshSupplierSelects);
 
 // image preview
 const _iimg = document.getElementById('iimg');
@@ -758,7 +710,12 @@ function renderGlobalReport(){
 function attachRealtime(){
   onSnapshot(collection(db,"suppliers"), (snap)=>{
     state.suppliers = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    // لا تختار أي شركة تلقائياً
+    if(state.suppliers.length){
+      const cur = $('#selSupplier').value;
+      if(!cur || !state.suppliers.some(s=>s.id===cur)){
+        $('#selSupplier').value = state.suppliers[0].id;
+      }
+    }
     rerender();
   });
 
