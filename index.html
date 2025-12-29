@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🔥🔥محلات أيمن أبو الشواربً للتجارة العامة🔥🔥 — )</title>
+<title>🔥محلات أيمن أبو الشوارب للتجارة العامة🔥 — (Firebase)</title>
 <style>
 :root{ --bg:#f7f7fb; --card:#fff; --txt:#111; --muted:#6b7280; --line:#e5e7eb; --pri:#2563eb; --ok:#16a34a; --warn:#b45309; }
 *{ box-sizing:border-box; }
@@ -50,7 +50,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 .tab.active{ background:#eef2ff; color:#1e40af }
 .tabcontent{ display:none }
 .tabcontent.show{ display:block }
-.modal{ position:fixed; inset:0; display:none; align-items:center;  justify-content:center; background:rgba(0,0,0,.25); z-index:100 }
+.modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.25); z-index:100 }
 .modal.show{ display:flex }
 .modal-box{ background:#fff; width:min(520px,92vw); border-radius:.8rem; padding:1rem; border:1px solid var(--line) }
 .filelabel{ position:relative }
@@ -72,7 +72,6 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
     <div class="card">
       <h2>ملخص سريع</h2>
 
-      <!-- ✅ changed label + empty-by-default select -->
       <div class="field">
         <label>الشركة</label>
         <select id="selSupplier"></select>
@@ -119,7 +118,6 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 
       <div class="tabcontent show" id="tSup">
         <div class="toolbar">
-          <!-- ✅ search box kept and will filter; also used as "search above their names" -->
           <input id="supSearch" class="input" placeholder="ابحث عن اسم الشركة...">
           <button id="btnGlobalReport" class="btn ghost">تقرير شامل</button>
         </div>
@@ -166,7 +164,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   </section>
 </main>
 
-<!-- Modals (Supplier / Invoice / Payment / Calendar / Global report) -->
+<!-- Modals -->
 <div class="modal" id="mSupplier"><div class="modal-box"><h3>شركة جديدة/تعديل</h3>
 <form id="fSup">
   <input type="hidden" id="sid">
@@ -183,9 +181,11 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   <div class="field"><label>التاريخ</label><input id="idate" type="date" required></div>
   <div class="field"><label>رقم الفاتورة</label><input id="ino"></div>
   <div class="field"><label>الشركة</label><select id="isup" required></select></div>
-  <div class="field"><label>المبلغ</label><input id="iamt" type="number" step="0.01" min="0" required></div>
-  <div class="field"><label>ملاحظات</label><input id="inote"></div>
 
+  <!-- ✅ amount accepts Arabic digits -->
+  <div class="field"><label>المبلغ</label><input id="iamt" type="text" inputmode="decimal" placeholder="مثال: ١٢٣٤ أو 1234" required></div>
+
+  <div class="field"><label>ملاحظات</label><input id="inote"></div>
   <div class="field">
     <label>صورة الفاتورة</label>
     <input id="iimg" type="file" accept="image/*" capture="environment">
@@ -199,7 +199,10 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   <input type="hidden" id="pid">
   <div class="field"><label>التاريخ</label><input id="pdate" type="date" required></div>
   <div class="field"><label>الشركة</label><select id="psup" required></select></div>
-  <div class="field"><label>المبلغ</label><input id="pamt" type="number" step="0.01" min="0" required></div>
+
+  <!-- ✅ amount accepts Arabic digits -->
+  <div class="field"><label>المبلغ</label><input id="pamt" type="text" inputmode="decimal" placeholder="مثال: ٥٠٠ أو 500" required></div>
+
   <div class="field"><label>طريقة الدفع</label><input id="pmethod" placeholder="نقدي/تحويل/شيك"></div>
   <div class="field"><label>اسم المندوب</label><input id="prep"></div>
   <div class="field"><label>ملاحظات</label><input id="pnote"></div>
@@ -234,6 +237,16 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   <div class="row-btns mt"><button class="btn" data-close="#mGlobalReport">إغلاق</button></div>
 </div></div>
 
+<div class="modal" id="mImage">
+  <div class="modal-box" style="max-width:90vw">
+    <h3>صورة الفاتورة</h3>
+    <img id="fullImg" style="width:100%;border-radius:.5rem">
+    <div class="row-btns mt">
+      <button class="btn" data-close="#mImage">إغلاق</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 // ===== Firebase Synced App (Firestore + Storage) =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
@@ -261,6 +274,49 @@ const $ = (s, root=document)=> root.querySelector(s);
 const $$ = (s, root=document)=> [...root.querySelectorAll(s)];
 const today = () => new Date().toISOString().slice(0,10);
 const fmt = n => Number(n||0).toLocaleString('ar-EG',{maximumFractionDigits:2});
+
+// ✅ Arabic/English number normalize (NO effect on old data)
+function normalizeNumber(val){
+  if(val === null || val === undefined) return "";
+  let s = String(val).trim();
+
+  const map = {
+    "٠":"0","١":"1","٢":"2","٣":"3","٤":"4","٥":"5","٦":"6","٧":"7","٨":"8","٩":"9",
+    "۰":"0","۱":"1","۲":"2","۳":"3","۴":"4","۵":"5","۶":"6","۷":"7","۸":"8","۹":"9"
+  };
+
+  s = s.replace(/[٠-٩۰-۹]/g, d => map[d] ?? d);
+
+  // separators
+  s = s
+    .replace(/٬/g, "")     // آلاف عربي
+    .replace(/،/g, "")     // فاصلة عربية
+    .replace(/,/g, "")     // فاصلة آلاف
+    .replace(/٫/g, ".");   // فاصلة عشرية عربية
+
+  // keep digits/dot/minus
+  s = s.replace(/[^\d.\-]/g, "");
+
+  // keep only first dot
+  const parts = s.split(".");
+  if(parts.length > 2){
+    s = parts.shift() + "." + parts.join("");
+  }
+  return s;
+}
+function toNumber(val){
+  const n = Number(normalizeNumber(val));
+  return Number.isFinite(n) ? n : 0;
+}
+
+// ✅ normalize text for searching Arabic
+const norm = (s="") => String(s)
+  .toLowerCase()
+  .replace(/[إأآا]/g,'ا')
+  .replace(/ى/g,'ي')
+  .replace(/ة/g,'ه')
+  .replace(/\s+/g,' ')
+  .trim();
 
 let state = {
   suppliers: [],
@@ -292,22 +348,13 @@ document.addEventListener('click', (e)=>{
 
 const byId = (a,id) => a.find(x=>x.id===id);
 
-// ✅ normalize for better Arabic search
-const norm = (s="") => String(s)
-  .toLowerCase()
-  .replace(/[إأآا]/g,'ا')
-  .replace(/ى/g,'ي')
-  .replace(/ة/g,'ه')
-  .replace(/\s+/g,' ')
-  .trim();
-
 function refreshSupplierSelects(){
   const opts = state.suppliers
     .slice()
     .sort((a,b)=> (a.name||'').localeCompare(b.name||'', 'ar'))
     .map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
 
-  // ✅ No default selected on load: placeholder always selected, real selection only when user chooses
+  // ✅ empty default
   $('#selSupplier').innerHTML = `<option value="" selected>— اختر شركة —</option>` + opts;
 
   $('#isup').innerHTML = `<option value="" disabled selected>اختر...</option>` + opts;
@@ -336,10 +383,7 @@ function setSummaryZeros(showHint=false){
 
 function renderSummary(){
   const id = String($('#selSupplier').value || '');
-  if(!id){
-    setSummaryZeros(false);
-    return;
-  }
+  if(!id){ setSummaryZeros(false); return; }
   const s = byId(state.suppliers, id);
   $('#selHint').style.display = 'none';
   $('#sumInv').textContent = fmt(sumInv(id));
@@ -519,7 +563,7 @@ async function addOrUpdateInvoice(it, file){
     date: it.date || today(),
     number: it.number || '',
     supplierId: it.supplierId,
-    amount: Number(it.amount||0),
+    amount: toNumber(it.amount), // ✅ Arabic digits supported
     note: it.note || '',
     imageUrl,
     storagePath
@@ -544,7 +588,7 @@ async function addOrUpdatePayment(it){
   const payload = {
     date: it.date || today(),
     supplierId: it.supplierId,
-    amount: Number(it.amount||0),
+    amount: toNumber(it.amount), // ✅ Arabic digits supported
     method: it.method || '',
     rep: it.rep || '',
     note: it.note || ''
@@ -576,14 +620,14 @@ window.editSup = (id)=>{
   openModal('#mSupplier');
 };
 
-// ✅ confirm on deletes (supplier/invoice/payment already had confirm; now calendar delete too)
 window.delSup = async (id)=>{ if(confirm('متأكد بدك تحذف الشركة وكل حركاتها؟')) await deleteSupplierCascade(id); };
 window.delInv = async (id)=>{ if(confirm('متأكد بدك تحذف الفاتورة؟')) await deleteInvoiceDoc(id); };
 window.delPay = async (id)=>{ if(confirm('متأكد بدك تحذف الدفعة؟')) await deletePaymentDoc(id); };
 
+// ✅ calendar delete asks confirm
 window.removeFromDay = async (k,id)=>{
   const sName = byId(state.suppliers, id)?.name || 'هذه الشركة';
-  if(!confirm(`متأكد بدك تحذف "${sName}" من يوم ${k}؟`)) return;
+  if(!confirm(`متأكد بدك تحذف "${sName}" من التقويم؟`)) return;
   const w = {...state.week};
   w[k] = (w[k]||[]).filter(v=>v!==id);
   await saveWeek(w);
@@ -626,11 +670,12 @@ document.addEventListener('submit', async (e)=>{
       date: $('#idate').value || today(),
       number: $('#ino').value.trim(),
       supplierId: String($('#isup').value),
-      amount: Number($('#iamt').value||0),
+      amount: $('#iamt').value, // ✅ will be normalized by toNumber()
       note: $('#inote').value.trim(),
       imageUrl: existing?.imageUrl || null,
       storagePath: existing?.storagePath || null
     };
+
     await addOrUpdateInvoice(it, file);
     closeModal('#mInvoice'); e.target.reset();
     document.getElementById('imgPreview').innerHTML = '';
@@ -642,7 +687,7 @@ document.addEventListener('submit', async (e)=>{
       id,
       date: $('#pdate').value || today(),
       supplierId: String($('#psup').value),
-      amount: Number($('#pamt').value||0),
+      amount: $('#pamt').value, // ✅ will be normalized by toNumber()
       method: $('#pmethod').value.trim(),
       rep: $('#prep').value.trim(),
       note: $('#pnote').value.trim()
@@ -683,7 +728,7 @@ document.getElementById('btnGlobalReport').addEventListener('click', ()=> {
 document.getElementById('filterDate').addEventListener('change', renderPaymentsByDate);
 document.getElementById('supSearch').addEventListener('input', renderSuppliers);
 
-// ✅ when user selects company, update summary
+// ✅ update summary only when user selects company
 document.getElementById('selSupplier').addEventListener('change', ()=>{
   const id = String($('#selSupplier').value || '');
   if(!id) setSummaryZeros(true);
@@ -769,14 +814,12 @@ function attachRealtime(){
   onSnapshot(collection(db,"suppliers"), (snap)=>{
     state.suppliers = snap.docs.map(d=>({id:d.id, ...d.data()}));
 
-    // ✅ keep summary empty on load (do NOT auto-select first supplier)
-    // if user had selected something earlier in the session, keep it if still exists
+    // ✅ keep empty by default; if current selected no longer exists => reset
     const cur = String($('#selSupplier').value || '');
     if(cur && !state.suppliers.some(s=>s.id===cur)){
       $('#selSupplier').value = '';
       setSummaryZeros(false);
     }
-
     rerender();
   });
 
@@ -803,7 +846,7 @@ function init(){
   document.getElementById('idate').value = today();
   document.getElementById('pdate').value = today();
 
-  // ✅ start with empty company selection + zeros
+  // ✅ start empty (no default company) + zeros
   document.getElementById('selSupplier').value = '';
   setSummaryZeros(false);
 
@@ -812,16 +855,6 @@ function init(){
 }
 init();
 </script>
-
-<div class="modal" id="mImage">
-  <div class="modal-box" style="max-width:90vw">
-    <h3>صورة الفاتورة</h3>
-    <img id="fullImg" style="width:100%;border-radius:.5rem">
-    <div class="row-btns mt">
-      <button class="btn" data-close="#mImage">إغلاق</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
