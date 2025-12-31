@@ -10,7 +10,7 @@
 body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto Kufi Arabic', Tahoma, Arial; background:var(--bg); color:var(--txt) }
 .topbar{ position:sticky; top:0; background:#fff; border-bottom:1px solid var(--line); padding:.6rem .9rem; display:flex; align-items:center; justify-content:space-between; z-index:10 }
 .brand{ font-weight:900 }
-.actions{ display:flex; gap:.5rem; align-items:center }
+.actions{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap }
 .container{ padding:1rem }
 .grid{ display:grid; gap:1rem; grid-template-columns: 1fr; }
 @media(min-width:1000px){ .grid{ grid-template-columns: 340px 1fr; } }
@@ -29,6 +29,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 .btn.primary{ background:var(--pri); color:#fff; border-color:transparent }
 .btn.success{ background:var(--ok); color:#fff; border-color:transparent }
 .btn.ghost{ background:#fff; color:#111 }
+.btn:disabled{ opacity:.6; cursor:not-allowed }
 .input{ border:1px solid var(--line); border-radius:.5rem; padding:.5rem .7rem; }
 .table-wrap{ max-height:380px; overflow:auto; border:1px solid var(--line); border-radius:.6rem }
 .table{ width:100%; border-collapse:collapse }
@@ -44,8 +45,8 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 .grid-2{ display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem }
 .pill{ background:#f8fafc; border:1px solid var(--line); border-radius:.6rem; padding:.8rem }
 .mt{ margin-top:.8rem }
-.toolbar{ display:flex; gap:.5rem; align-items:center; margin:.3rem 0 }
-.tabs{ display:flex; gap:.4rem; border-bottom:1px solid var(--line); margin-bottom:.6rem }
+.toolbar{ display:flex; gap:.5rem; align-items:center; margin:.3rem 0; flex-wrap:wrap }
+.tabs{ display:flex; gap:.4rem; border-bottom:1px solid var(--line); margin-bottom:.6rem; flex-wrap:wrap }
 .tab{ background:#fff; border:1px solid var(--line); border-bottom:none; border-radius:.6rem .6rem 0 0; padding:.4rem .7rem; cursor:pointer }
 .tab.active{ background:#eef2ff; color:#1e40af }
 .tabcontent{ display:none }
@@ -56,12 +57,19 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
 .filelabel{ position:relative }
 .filelabel input{ position:absolute; inset:0; opacity:0; cursor:pointer }
 .warnline{ color:#b91c1c; font-size:.9rem; margin-top:.25rem }
+hr{ border:none; border-top:1px solid var(--line); margin: .9rem 0 }
+@media print{
+  .topbar, .btn, .tabs, .toolbar { display:none !important; }
+  body{ background:#fff }
+  .card{ box-shadow:none }
+}
 </style>
 </head>
 <body>
 <nav class="topbar">
   <div class="brand">🔥محلات أيمن أبو الشوارب للتجارة العامة🔥</div>
   <div class="actions">
+    <button id="btnPrintAll" class="btn ghost">🖨️ طباعة كشف جميع الشركات</button>
     <button id="btnExport" class="btn ghost">تصدير النسخة الاحتياطية</button>
     <label class="btn ghost filelabel">استيراد<input id="importFile" type="file" accept=".json" hidden></label>
   </div>
@@ -89,7 +97,9 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
         <button id="addInvoice" class="btn primary">إضافة فاتورة</button>
         <button id="addPayment" class="btn success">إضافة دفعة</button>
         <button id="addSupplier" class="btn">إضافة/تعديل شركة</button>
+        <button id="btnStatement" class="btn ghost" disabled>🔍 كشف حساب الشركة</button>
       </div>
+
       <hr>
       <div class="field"><label>إظهار الدفعات بتاريخ</label><input type="date" id="filterDate"></div>
       <div id="paymentsByDate" class="small"></div>
@@ -181,11 +191,9 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   <div class="field"><label>التاريخ</label><input id="idate" type="date" required></div>
   <div class="field"><label>رقم الفاتورة</label><input id="ino"></div>
   <div class="field"><label>الشركة</label><select id="isup" required></select></div>
-
-  <!-- ✅ amount accepts Arabic digits -->
   <div class="field"><label>المبلغ</label><input id="iamt" type="text" inputmode="decimal" placeholder="مثال: ١٢٣٤ أو 1234" required></div>
-
   <div class="field"><label>ملاحظات</label><input id="inote"></div>
+
   <div class="field">
     <label>صورة الفاتورة</label>
     <input id="iimg" type="file" accept="image/*" capture="environment">
@@ -199,10 +207,7 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   <input type="hidden" id="pid">
   <div class="field"><label>التاريخ</label><input id="pdate" type="date" required></div>
   <div class="field"><label>الشركة</label><select id="psup" required></select></div>
-
-  <!-- ✅ amount accepts Arabic digits -->
   <div class="field"><label>المبلغ</label><input id="pamt" type="text" inputmode="decimal" placeholder="مثال: ٥٠٠ أو 500" required></div>
-
   <div class="field"><label>طريقة الدفع</label><input id="pmethod" placeholder="نقدي/تحويل/شيك"></div>
   <div class="field"><label>اسم المندوب</label><input id="prep"></div>
   <div class="field"><label>ملاحظات</label><input id="pnote"></div>
@@ -236,6 +241,35 @@ body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto K
   </div>
   <div class="row-btns mt"><button class="btn" data-close="#mGlobalReport">إغلاق</button></div>
 </div></div>
+
+<div class="modal" id="mStatement">
+  <div class="modal-box" style="width:min(920px,96vw)">
+    <div class="card-head">
+      <h3 id="stmtTitle" style="margin:0">كشف حساب الشركة</h3>
+      <button class="btn" data-close="#mStatement">إغلاق</button>
+    </div>
+    <div class="muted small" id="stmtMeta" style="margin:.35rem 0 .6rem"></div>
+    <div class="table-wrap" style="max-height:60vh">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>التاريخ</th>
+            <th>النوع</th>
+            <th>الوصف</th>
+            <th>مدين</th>
+            <th>دائن</th>
+            <th>الرصيد</th>
+          </tr>
+        </thead>
+        <tbody id="stmtBody"></tbody>
+      </table>
+    </div>
+    <div class="row-btns mt">
+      <button id="btnPrintStmt" class="btn primary">🖨️ طباعة كشف الشركة</button>
+      <button class="btn" data-close="#mStatement">إغلاق</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal" id="mImage">
   <div class="modal-box" style="max-width:90vw">
@@ -383,7 +417,10 @@ function setSummaryZeros(showHint=false){
 
 function renderSummary(){
   const id = String($('#selSupplier').value || '');
-  if(!id){ setSummaryZeros(false); return; }
+  const has = !!id;
+  $('#btnStatement').disabled = !has;
+
+  if(!has){ setSummaryZeros(false); return; }
   const s = byId(state.suppliers, id);
   $('#selHint').style.display = 'none';
   $('#sumInv').textContent = fmt(sumInv(id));
@@ -510,6 +547,170 @@ function rerender(){
   renderPaymentsByDate();
 }
 
+// ---------- كشف حساب الشركة (مودال) ----------
+function buildStatement(supplierId){
+  const s = byId(state.suppliers, supplierId);
+  if(!s) return {title:'', meta:'', rowsHtml:'', totals:{inv:0,pay:0,open:0,bal:0}};
+
+  const invs = state.invoices
+    .filter(x=>x.supplierId===supplierId)
+    .map(x=>({
+      date: x.date || '',
+      kind: 'فاتورة',
+      desc: x.number ? `فاتورة رقم ${x.number}` : 'فاتورة',
+      debit: Number(x.amount||0),
+      credit: 0,
+      note: x.note || ''
+    }));
+
+  const pays = state.payments
+    .filter(x=>x.supplierId===supplierId)
+    .map(x=>({
+      date: x.date || '',
+      kind: 'دفعة',
+      desc: x.method ? `دفعة (${x.method})` : 'دفعة',
+      debit: 0,
+      credit: Number(x.amount||0),
+      note: x.note || '',
+      rep: x.rep || ''
+    }));
+
+  const all = [...invs, ...pays].sort((a,b)=>{
+    const ad = a.date||'', bd = b.date||'';
+    if(ad === bd) return (a.kind==='فاتورة' ? -1 : 1); // نفس اليوم: الفاتورة قبل الدفعة
+    return ad.localeCompare(bd);
+  });
+
+  let run = Number(s.opening||0);
+  const open = Number(s.opening||0);
+  const totalInv = invs.reduce((a,b)=>a+b.debit,0);
+  const totalPay = pays.reduce((a,b)=>a+b.credit,0);
+
+  const rowsHtml = all.map(item=>{
+    run = run + item.debit - item.credit;
+    const descExtra = [
+      item.note ? `ملاحظة: ${item.note}` : '',
+      item.rep ? `مندوب: ${item.rep}` : ''
+    ].filter(Boolean).join(' — ');
+    return `
+      <tr>
+        <td>${item.date||''}</td>
+        <td>${item.kind}</td>
+        <td>${item.desc}${descExtra ? `<br><small>${descExtra}</small>` : ''}</td>
+        <td>${item.debit ? fmt(item.debit) : ''}</td>
+        <td>${item.credit ? fmt(item.credit) : ''}</td>
+        <td><strong>${fmt(run)}</strong></td>
+      </tr>
+    `;
+  }).join('');
+
+  const balNow = open + totalInv - totalPay;
+  const title = `كشف حساب: ${s.name}`;
+  const meta = `افتتاحي: ${fmt(open)} — مجموع الفواتير: ${fmt(totalInv)} — مجموع الدفعات: ${fmt(totalPay)} — الرصيد الحالي: ${fmt(balNow)}`;
+
+  return {title, meta, rowsHtml, totals:{inv:totalInv,pay:totalPay,open,bal:balNow}, supplierName:s.name};
+}
+
+function openStatementModal(supplierId){
+  const out = buildStatement(supplierId);
+  $('#stmtTitle').textContent = out.title || 'كشف حساب الشركة';
+  $('#stmtMeta').textContent = out.meta || '';
+  $('#stmtBody').innerHTML = out.rowsHtml || `<tr><td colspan="6" class="muted">لا توجد حركات لهذه الشركة.</td></tr>`;
+  $('#btnPrintStmt').onclick = ()=> printStatement(supplierId);
+  openModal('#mStatement');
+}
+
+function printWindow(html, title='طباعة'){
+  const w = window.open('', '_blank');
+  if(!w){ alert('المتصفح منع فتح نافذة الطباعة. جرّب تسمح بالنوافذ المنبثقة.'); return; }
+  w.document.open();
+  w.document.write(`
+    <!doctype html><html lang="ar" dir="rtl">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>${title}</title>
+      <style>
+        body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto Kufi Arabic', Tahoma, Arial; margin:18px; color:#111; }
+        h1,h2,h3{ margin:.2rem 0 .6rem }
+        .muted{ color:#6b7280; font-size:.9rem }
+        table{ width:100%; border-collapse:collapse; margin-top:10px }
+        th,td{ border:1px solid #e5e7eb; padding:8px; text-align:right; vertical-align:top }
+        th{ background:#f8fafc }
+        small{ color:#6b7280 }
+        .pill{ margin-top:8px; padding:10px; border:1px solid #e5e7eb; border-radius:10px; background:#fafafa }
+        .pagebreak{ page-break-before: always; }
+      </style>
+    </head>
+    <body>${html}</body></html>
+  `);
+  w.document.close();
+  w.focus();
+  w.print();
+}
+
+function printStatement(supplierId){
+  const out = buildStatement(supplierId);
+  const html = `
+    <h2>🔥محلات أيمن أبو الشوارب للتجارة العامة🔥</h2>
+    <h3>${out.title}</h3>
+    <div class="muted">تاريخ الطباعة: ${today()}</div>
+    <div class="pill">${out.meta}</div>
+    <table>
+      <thead>
+        <tr>
+          <th>التاريخ</th><th>النوع</th><th>الوصف</th><th>مدين</th><th>دائن</th><th>الرصيد</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${out.rowsHtml || `<tr><td colspan="6" class="muted">لا توجد حركات.</td></tr>`}
+      </tbody>
+    </table>
+  `;
+  printWindow(html, out.title || 'كشف حساب');
+}
+
+// ---------- طباعة كشف جميع الشركات ----------
+function printAllCompanies(){
+  const rows = state.suppliers
+    .slice()
+    .sort((a,b)=> (a.name||'').localeCompare(b.name||'', 'ar'))
+    .map(s=>{
+      const inv = sumInv(s.id);
+      const pay = sumPay(s.id);
+      const open = Number(s.opening||0);
+      const bal = open + inv - pay;
+      return {id:s.id, name:s.name, inv, pay, open, bal};
+    });
+
+  const summaryTable = `
+    <h2>🔥محلات أيمن أبو الشوارب للتجارة العامة🔥</h2>
+    <h3>كشف جميع الشركات</h3>
+    <div class="muted">تاريخ الطباعة: ${today()}</div>
+    <table>
+      <thead>
+        <tr>
+          <th>الشركة</th><th>افتتاحي</th><th>مجموع فواتير</th><th>مجموع دفعات</th><th>الرصيد الحالي</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r=>`
+          <tr>
+            <td>${r.name}</td>
+            <td>${fmt(r.open)}</td>
+            <td>${fmt(r.inv)}</td>
+            <td>${fmt(r.pay)}</td>
+            <td><strong>${fmt(r.bal)}</strong></td>
+          </tr>
+        `).join('') || `<tr><td colspan="5" class="muted">لا توجد شركات.</td></tr>`}
+      </tbody>
+    </table>
+    <div class="pill muted">ملاحظة: للتفاصيل الكاملة لكل شركة استخدم زر "كشف حساب الشركة" من داخل النظام.</div>
+  `;
+
+  printWindow(summaryTable, 'كشف جميع الشركات');
+}
+
 // ---------- Firebase CRUD ----------
 async function addOrUpdateSupplier(s){
   if(s.id){
@@ -624,7 +825,6 @@ window.delSup = async (id)=>{ if(confirm('متأكد بدك تحذف الشرك�
 window.delInv = async (id)=>{ if(confirm('متأكد بدك تحذف الفاتورة؟')) await deleteInvoiceDoc(id); };
 window.delPay = async (id)=>{ if(confirm('متأكد بدك تحذف الدفعة؟')) await deletePaymentDoc(id); };
 
-// ✅ calendar delete asks confirm
 window.removeFromDay = async (k,id)=>{
   const sName = byId(state.suppliers, id)?.name || 'هذه الشركة';
   if(!confirm(`متأكد بدك تحذف "${sName}" من التقويم؟`)) return;
@@ -721,18 +921,29 @@ document.getElementById('addPayment').addEventListener('click', ()=> {
   openModal('#mPayment');
 });
 document.getElementById('addToCal').addEventListener('click', ()=> openModal('#mCalendar'));
+
 document.getElementById('btnGlobalReport').addEventListener('click', ()=> {
   renderGlobalReport();
   openModal('#mGlobalReport');
 });
+
 document.getElementById('filterDate').addEventListener('change', renderPaymentsByDate);
 document.getElementById('supSearch').addEventListener('input', renderSuppliers);
 
-// ✅ update summary only when user selects company
 document.getElementById('selSupplier').addEventListener('change', ()=>{
   const id = String($('#selSupplier').value || '');
   if(!id) setSummaryZeros(true);
   renderSummary();
+});
+
+document.getElementById('btnStatement').addEventListener('click', ()=>{
+  const id = String($('#selSupplier').value || '');
+  if(!id){ setSummaryZeros(true); return; }
+  openStatementModal(id);
+});
+
+document.getElementById('btnPrintAll').addEventListener('click', ()=>{
+  printAllCompanies();
 });
 
 // image preview
@@ -814,7 +1025,6 @@ function attachRealtime(){
   onSnapshot(collection(db,"suppliers"), (snap)=>{
     state.suppliers = snap.docs.map(d=>({id:d.id, ...d.data()}));
 
-    // ✅ keep empty by default; if current selected no longer exists => reset
     const cur = String($('#selSupplier').value || '');
     if(cur && !state.suppliers.some(s=>s.id===cur)){
       $('#selSupplier').value = '';
@@ -846,7 +1056,7 @@ function init(){
   document.getElementById('idate').value = today();
   document.getElementById('pdate').value = today();
 
-  // ✅ start empty (no default company) + zeros
+  // ✅ start empty (no default company)
   document.getElementById('selSupplier').value = '';
   setSummaryZeros(false);
 
